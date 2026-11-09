@@ -72,7 +72,7 @@ button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed}button:foc
 .garden-wishes li:nth-child(2)::after{animation-delay:-.6s}.garden-wishes li:nth-child(3)::after{animation-delay:-1.2s}
 @keyframes wish-shine{from{box-shadow:0 0 10px #ffe5a46b,0 4px 12px #2a203d66;text-shadow:0 0 2px #fff6d0}to{box-shadow:0 0 27px #fff0bb,0 0 5px #fff7d5,0 4px 12px #2a203d66;text-shadow:0 0 10px #fff6d0}}
 .garden-wishes li.wish-landed{animation:wish-land .5s both,wish-shine 2.8s ease-in-out .5s infinite alternate}@keyframes wish-land{from{transform:scale(.94) rotate(-2deg)}to{transform:scale(1) rotate(0)}}
-.garden-wish-fairy{position:fixed;z-index:1200;max-width:min(270px,70vw);padding:10px 15px;border:1px solid #ffe7ae;border-radius:18px;background:#654577ed;box-shadow:0 0 20px #fff2b8,0 0 55px #f5c98c;color:#fff9e8;font:italic 17px/1.2 var(--serif);text-align:center;pointer-events:none;overflow-wrap:anywhere}
+.garden-wish-fairy{position:fixed;z-index:1200;max-width:min(270px,70vw);padding:10px 15px;border:1px solid #ffe7ae;border-radius:18px;background:#654577ed;box-shadow:0 0 20px #fff2b8,0 0 55px #f5c98c;color:#fff9e8;font:italic 17px/1.2 var(--serif);text-align:center;pointer-events:none;overflow-wrap:anywhere;will-change:transform,opacity}
 .garden-wish-fairy::before,.garden-wish-fairy::after{position:absolute;color:#ffe7a4;text-shadow:0 0 12px #fff}.garden-wish-fairy::before{content:'🧚';top:-29px;left:-20px;font-size:30px;animation:fairy-flutter .35s ease-in-out infinite alternate}.garden-wish-fairy::after{content:'✦';top:-14px;right:-14px}
 @keyframes fairy-flutter{to{transform:translateY(-8px) rotate(-12deg)}}
 .story-page[data-page="4"] .wish-privacy{color:#eee0e9}
@@ -783,6 +783,12 @@ body:not(.storybook-awakened) #global-enchanted-sparks span{animation-play-state
 .realm-aurora-three{filter:blur(58px)}
 .magic-entrance:not(.is-opening) .entrance-door-half{will-change:auto}
 .magic-entrance.is-opening .entrance-door-half{will-change:transform}
+
+/* Avoid repainting the text card and landscape glow while their decorations move. */
+@media(max-width:760px){
+ body.storybook-awakened .paper .paper-content{backdrop-filter:none!important}
+ #outer-enchanted-realm .realm-vector-landscape{filter:none}
+}
 
 </style>
   
@@ -2092,7 +2098,7 @@ knockDoor.focus({preventScroll: true});
  const ctx=canvas.getContext('2d',{alpha:true});
  if(!ctx)return;
  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
- let width=1,height=1,dpr=1,stars=[],fairies=[],sprites=[],frame=0,raf=0,last=0,initialized=false;
+ let width=1,height=1,dpr=1,stars=[],fairies=[],sprites=[],fairySprite,frame=0,raf=0,last=0,initialized=false;
  let seed=802251;
  function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}
  function makeSprite(size,kind){
@@ -2115,6 +2121,16 @@ knockDoor.focus({preventScroll: true});
   }
   return c;
  }
+ function makeFairySprite(){
+  const c=document.createElement('canvas');c.width=c.height=48;
+  const q=c.getContext('2d');
+  const g=q.createRadialGradient(24,24,0,24,24,24);
+  g.addColorStop(0,'rgba(255,250,221,.92)');
+  g.addColorStop(.18,'rgba(255,225,135,.48)');
+  g.addColorStop(1,'rgba(255,196,126,0)');
+  q.fillStyle=g;q.fillRect(0,0,48,48);
+  return c;
+ }
  function rebuild(){
   initialized=true;
   width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
@@ -2122,7 +2138,7 @@ knockDoor.focus({preventScroll: true});
   canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
   canvas.style.width=width+'px';canvas.style.height=height+'px';
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  seed=802251;sprites=[makeSprite(24,false),makeSprite(35,true),makeSprite(56,true)];
+  seed=802251;sprites=[makeSprite(24,false),makeSprite(35,true),makeSprite(56,true)];fairySprite=makeFairySprite();
   const number=Math.min(220,Math.max(100,Math.round(width*height/8500)));
   stars=[];
   for(let i=0;i<number;i++){
@@ -2163,12 +2179,9 @@ knockDoor.focus({preventScroll: true});
   for(const f of fairies){
    const px=f.x+Math.sin(t*f.speed+f.phase)*f.dx;
    const py=((f.y-t*f.dy)%height+height)%height;
-   let g=ctx.createRadialGradient(px,py,0,px,py,f.r*5);
-   g.addColorStop(0,'rgba(255,250,221,.92)');
-   g.addColorStop(.18,'rgba(255,225,135,.48)');
-   g.addColorStop(1,'rgba(255,196,126,0)');
+   const size=f.r*10;
    ctx.globalAlpha=.52+.38*Math.sin(t*1.9+f.phase)**2;
-   ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,f.r*5,0,Math.PI*2);ctx.fill();
+   ctx.drawImage(fairySprite,px-size/2,py-size/2,size,size);
   }
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
  }
