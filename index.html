@@ -485,8 +485,7 @@ body.entrance-locked #everlasting-golden-stars{opacity:.72;z-index:1101}
   body.storybook-awakened .bottom-note{margin-top:7px}
 }
 @media(max-width:760px){
-  body.storybook-awakened .storybook.shell{height:calc(100dvh - 76px);display:flex;flex-direction:column;padding-bottom:10px}
-  body.storybook-awakened .book{height:auto!important;min-height:0;flex:1 1 0;overflow-y:auto}
+  body.storybook-awakened .book{height:auto!important;min-height:0}
   body.storybook-awakened .story-page{position:relative;display:flex;flex-direction:column}
   body.storybook-awakened .paper{min-height:0;padding:34px 18px 36px;overflow:visible}
   body.storybook-awakened .paper-content{transform:none!important;max-width:100%;padding:22px 19px 24px}
@@ -1803,7 +1802,6 @@ knockDoor.focus({preventScroll: true});
       page.hidden = i !== index;
       page.classList.toggle('is-active', i === index);
     });
-    book.scrollTop = 0;
     fitBookToViewport();
     book.classList.remove('turn-forward', 'turn-back');
     void book.offsetWidth;
