@@ -1494,6 +1494,7 @@ entranceSoundToggle.addEventListener('click', () => {
   entranceSoundToggle.textContent = entranceSoundOn ? '♪ Sound on' : '♪ Sound off';
 });
 function finishEntrance() {
+  library.hidden=false;
   showTheLibrary();
 }
 function beginEntrance() {
@@ -1505,7 +1506,6 @@ function beginEntrance() {
     entranceAudio.currentTime = 0;
     entranceAudio.play().catch(() => { /* Sound may be unavailable; the door still opens. */ });
   }
-  library.hidden=false;
   libraryStep=0;
   if(entranceSoundOn){fairyMusic.volume=0;safePlay(fairyMusic,0,true);}
   entrance.classList.add('is-knocking');
