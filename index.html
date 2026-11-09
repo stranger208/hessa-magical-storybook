@@ -1351,7 +1351,7 @@ body:not(.storybook-awakened) #global-enchanted-sparks span{animation-play-state
               <input class="garden-wish-input" id="garden-wish-input" type="text" maxlength="120" required autocomplete="off" />
               <button type="submit" class="primary-button" id="garden-wish-send">Send wish to the garden <span aria-hidden="true">✦</span></button>
             </form>
-            <p class="wish-privacy">Wishes stay in this browser.</p>
+            <p class="wish-privacy">Wishes disappear when you reload this page.</p>
             <p class="story-copy">And just beyond the garden, Hessa discovered a golden gallery of memories.</p>
             <button type="button" class="primary-button next-button" data-next>Enter the gallery of memories <span aria-hidden="true">→</span></button>
           </div>
@@ -1414,10 +1414,10 @@ body:not(.storybook-awakened) #global-enchanted-sparks span{animation-play-state
             <p class="story-copy">At the highest star, Hessa found a tiny golden quill. It was waiting for the wish closest to her heart.</p>
             <label class="wish-input-label" for="special-wish">If you could wish for one special small birthday gift, what would it be?..</label>
             <p class="wish-promise">If it's meant for you, it will find its way to you someday..</p>
-            <textarea class="wish-textarea" id="special-wish" maxlength="240" rows="3" placeholder="Dear stars, my wish is…"></textarea>
+            <textarea class="wish-textarea" id="special-wish" maxlength="240" rows="3" autocomplete="off" placeholder="Dear stars, my wish is…"></textarea>
             <button class="primary-button cast-wish-button" type="button" id="cast-wish">✦ &nbsp; Send my wish to the stars</button>
             <div class="cast-result" id="cast-result" role="status" aria-live="polite" hidden><span>✦</span> Your wish has joined the stars, Hessa. May the next chapter bring wonderful possibilities. <span>✦</span></div>
-            <p class="wish-privacy">Your wish stays in this browser. It is not sent to anyone.</p>
+            <p class="wish-privacy">Your wish disappears when you reload. It is not sent to anyone.</p>
             <button type="button" class="primary-button next-button" data-next>Find the last sealed letter <span aria-hidden="true">→</span></button>
           </div>
         </div>
@@ -1859,20 +1859,14 @@ knockDoor.focus({preventScroll: true});
   next.addEventListener('click', () => showPage(currentPage + 1));
   document.getElementById('start-over').addEventListener('click', e => {e.preventDefault(); showPage(0);});
 
-  // Three keys hold the visitor's wishes in this browser.
+  // Wishes remain visible while this page is open.
   const wishKeys = [...document.querySelectorAll('[data-wish]')];
   const gardenWishes = document.getElementById('garden-wishes');
   const gardenWishInput = document.getElementById('garden-wish-input');
   const gardenWishForm = document.getElementById('garden-wish-form');
-  const gardenWishStore = 'hessa-three-garden-wishes';
   const gardenWishValues = {};
   try {
-    const saved = JSON.parse(localStorage.getItem(gardenWishStore) || localStorage.getItem('hessa-garden-wishes') || '{}');
-    const oldKeys = ['wonder', 'courage', 'joy'];
-    wishKeys.forEach((key, index) => {
-      const value = saved[key.dataset.wish] ?? saved[oldKeys[index]];
-      if (typeof value === 'string') gardenWishValues[key.dataset.wish] = value.slice(0, 120);
-    });
+    ['hessa-three-garden-wishes', 'hessa-garden-wishes', 'hessa-tenth-birthday-secret-wish'].forEach(key => localStorage.removeItem(key));
   } catch (_) { /* Local previews can block storage. */ }
   let selectedWishKey;
   let wishFlying = false;
@@ -1917,7 +1911,6 @@ knockDoor.focus({preventScroll: true});
     wishFlying = true;
     gardenWishInput.blur();
     gardenWishValues[selectedWishKey.dataset.wish] = wish;
-    try { localStorage.setItem(gardenWishStore, JSON.stringify(gardenWishValues)); } catch (_) { /* Wishes still appear in this session. */ }
     const card = renderGardenWishes().get(selectedWishKey.dataset.wish);
     card.style.visibility = 'hidden';
     const start = gardenWishInput.getBoundingClientRect();
@@ -2012,8 +2005,7 @@ knockDoor.focus({preventScroll: true});
   const wishScene = document.getElementById('secret-wish-scene');
   const castWish = document.getElementById('cast-wish');
   const wishSparks = document.getElementById('wish-sparks');
-  const privateWishKey = 'hessa-tenth-birthday-secret-wish';
-  try {wishInput.value = localStorage.getItem(privateWishKey) || '';} catch (_) {/* file previews sometimes block localStorage */}
+  wishInput.value = '';
   for (let i = 0; i < 48; i++) {
     const spark = document.createElement('span');
     spark.className = 'wish-spark';
@@ -2035,7 +2027,6 @@ knockDoor.focus({preventScroll: true});
       return;
     }
     wishInput.setCustomValidity('');
-    try {localStorage.setItem(privateWishKey, text);} catch (_) { /* A magical preview still works without storage. */ }
     wishScene.classList.remove('wish-cast');
     void wishScene.offsetWidth;
     wishScene.classList.add('wish-cast');
