@@ -313,15 +313,15 @@ body.entrance-locked{overflow:hidden!important; height:100vh; height:100dvh}
 .portal-spark{position:absolute;left:calc(12% + var(--i)*12%);top:35%;color:#fff5c9;font-size:clamp(22px,5vw,63px);text-shadow:0 0 22px #fff0be;animation:portal-spark 2.4s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.39s)}
 .portal-glow{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);color:#fff7d9;font-size:clamp(110px,25vw,350px);text-shadow:0 0 90px #fff8ba}
 .magic-entrance.is-knocking .entrance-scene{animation:door-knock-shudder .16s linear 3}
-.magic-entrance.is-opening .entrance-left-half{transform:rotateY(-110deg);filter:brightness(.78)}
-.magic-entrance.is-opening .entrance-right-half{transform:rotateY(110deg);filter:brightness(.76);transition-delay:.12s}
+.magic-entrance.is-opening .entrance-left-half{transform:perspective(1600px) rotateY(-110deg);filter:brightness(.78)}
+.magic-entrance.is-opening .entrance-right-half{transform:perspective(1600px) rotateY(110deg);filter:brightness(.76);transition-delay:.12s}
 .magic-entrance.is-opening .entrance-hit-area{pointer-events:none}
 @keyframes door-knock-shudder{0%,100%{translate:0 0}50%{translate:0 2px}}
 @keyframes portal-shimmer{from{opacity:.35}to{opacity:1}}
 @keyframes portal-spark{from{opacity:.4;transform:translateY(7px) scale(.7)}to{opacity:1;transform:translateY(-8px) scale(1.12)}}
 @media(max-width:650px){.entrance-sound-toggle{bottom:10px;right:10px;padding:8px 11px;font-size:10px}}
 @media(max-width:620px){.entrance-door-half{background-image:url("assets/entrance-door-mobile.png")}}
-@media(prefers-reduced-motion:reduce){.magic-entrance.is-opening .entrance-door-half{transform:none;opacity:0;transition:opacity .6s ease!important}.entrance-portal::before,.portal-spark{animation:none}}
+@media(prefers-reduced-motion:reduce){.magic-entrance.is-opening .entrance-door-half{transition-duration:.6s}.entrance-portal::before,.portal-spark{animation:none}}
 
 
 /* VERSION 8 · ENCHANTED LIBRARY / original royal bookshelf and cinematic animation */
@@ -1494,7 +1494,6 @@ entranceSoundToggle.addEventListener('click', () => {
   entranceSoundToggle.textContent = entranceSoundOn ? '♪ Sound on' : '♪ Sound off';
 });
 function finishEntrance() {
-  if (entrance.hidden) return;
   showTheLibrary();
 }
 function beginEntrance() {
@@ -1511,15 +1510,12 @@ function beginEntrance() {
   if(entranceSoundOn){fairyMusic.volume=0;safePlay(fairyMusic,0,true);}
   entrance.classList.add('is-knocking');
   const knockDelay = reducedMotion.matches ? 0 : 530;
-  const rightDoor = entrance.querySelector('.entrance-right-half');
-  rightDoor.addEventListener('transitionend', event => {
-    if (event.target === rightDoor && event.propertyName === (reducedMotion.matches ? 'opacity' : 'transform')) finishEntrance();
-  });
+  const swingDuration = reducedMotion.matches ? 750 : 2840;
   window.setTimeout(() => {
     entrance.classList.remove('is-knocking');
     entrance.classList.add('is-opening');
   }, knockDelay);
-  window.setTimeout(finishEntrance, knockDelay + (reducedMotion.matches ? 1500 : 5000));
+  window.setTimeout(finishEntrance, knockDelay + swingDuration);
 }
 
 // V8 — Complete entrance sequence. Existing photo gallery, 5 wishes, and Mema reveal remain unchanged.
