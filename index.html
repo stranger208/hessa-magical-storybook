@@ -1995,7 +1995,7 @@ knockDoor.focus({preventScroll: true});
  const ctx=canvas.getContext('2d',{alpha:true});
  if(!ctx)return;
  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
- let width=1,height=1,dpr=1,stars=[],fairies=[],sprites=[],frame=0,raf=0,last=0;
+ let width=1,height=1,dpr=1,stars=[],fairies=[],sprites=[],frame=0,raf=0,last=0,initialized=false;
  let seed=802251;
  function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}
  function makeSprite(size,kind){
@@ -2019,6 +2019,7 @@ knockDoor.focus({preventScroll: true});
   return c;
  }
  function rebuild(){
+  initialized=true;
   width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
   dpr=Math.min(devicePixelRatio||1,1.25);
   canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
@@ -2080,7 +2081,7 @@ knockDoor.focus({preventScroll: true});
    raf=0;
    return;
   }
-  if(!canvas.width)rebuild();
+  if(!initialized)rebuild();
   if(!raf)raf=window.requestAnimationFrame(render);
  }
  const cometLayer=document.getElementById('realm-comet-field');
