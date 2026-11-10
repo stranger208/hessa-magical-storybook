@@ -90,8 +90,9 @@ button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed}button:foc
 .envelope-seal:focus-visible{outline:3px solid #fff9d8;outline-offset:4px}
 .seal-tap-hint{position:absolute;z-index:5;left:50%;top:calc(59.4% + 48px);transform:translateX(-50%);padding:5px 10px;border-radius:12px;background:#4e356bc9;color:#fff1c6;font:700 10px var(--sans);letter-spacing:.14em;white-space:nowrap;text-shadow:0 0 7px #ffe6a7;pointer-events:none}
 .story-page[data-page="8"] .whisper-note{color:#f8e2a6;text-shadow:0 0 8px #ffe2a0,0 1px 2px #483353;font-weight:600}
+.story-page[data-page="8"] .illustration{order:-1}
 .story-page[data-page="8"] .illustration-ribbon{font-size:11px;letter-spacing:.24em;color:#fff0c3;text-shadow:0 0 10px #ffe5a3,0 2px 5px #43305a}
-@media(max-width:760px){.envelope-seal{top:calc(50% + 10.7vw);width:58px;height:58px}.seal-tap-hint{top:calc(50% + 10.7vw + 36px);font-size:9px}.story-page[data-page="8"] .illustration-ribbon{font-size:9px;letter-spacing:.14em}}
+@media(max-width:760px){.envelope-seal{top:calc(50% + 10.7vw);width:58px;height:58px}.seal-tap-hint{top:calc(50% + 10.7vw + 36px);font-size:9px}.story-page[data-page="8"] .illustration{order:0}.story-page[data-page="8"] .illustration-ribbon{font-size:9px;letter-spacing:.14em}}
 .letter-sheet{position:relative;width:min(640px,100%);max-height:calc(100vh - 54px);overflow-y:auto;text-align:center;background:radial-gradient(circle at 0 0,#efe0f2b0,transparent 53%),#fffbf2;color:#53435e;padding:40px 60px 40px;border:1px solid #c09c65;box-shadow:0 0 0 9px #fff9ed,0 0 0 10px #ceaa74,0 28px 85px #36283b85;animation:letter-rise .6s ease-out}.letter-sheet::before{content:"";pointer-events:none;position:absolute;inset:15px;border:1px solid #d9bd8d}
 .close-letter{position:absolute;right:22px;top:16px;z-index:2;background:none;border:none;font:29px Georgia,serif;color:#8b718c}.letter-top-decoration{font-size:23px;color:#b38d56;margin-bottom:14px}.letter-kicker{font-size:9px;letter-spacing:.29em;color:#9b774d;font-weight:700}.letter-sheet h2{font-family:var(--serif);font-size:clamp(47px,6vw,74px);font-weight:500;color:#594466;line-height:.94;margin:18px 0 12px}.letter-sheet h2 em{color:#9d7b9b;font-weight:400}.letter-line{color:#b58f5e;font-size:20px;margin-bottom:10px}.letter-body{max-width:505px;margin:auto;font-family:var(--serif);font-size:24px;line-height:1.19;color:#645669}.letter-body p{margin:10px 0}.letter-body strong{color:#6f4b75}.letter-signoff{font-family:var(--serif);font-style:italic;font-size:21px;margin:20px 0 4px;color:#806481}.secret-signature{font-family:var(--serif);font-size:44px;color:#76507c}.secret-signature span{color:#c19b60;font-size:20px}.restart-button{background:none;border:none;border-bottom:1px solid #b6a1b7;color:#715179;padding:5px 0;font-size:11px;font-weight:700;letter-spacing:.04em;margin-top:18px}
 @keyframes twinkle{from{opacity:.2;transform:scale(.7)}to{opacity:1;transform:scale(1.13)}}@keyframes wish-pop{from{opacity:.1;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes letter-rise{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
@@ -1628,6 +1629,9 @@ knockDoor.focus({preventScroll: true});
 
   const config = window.HESSA_BOOK || {};
   const pages = [...document.querySelectorAll('.story-page')];
+  // Place the seal after the letter text in mobile reading and keyboard order.
+  const finalPage = document.querySelector('.story-page[data-page="8"]');
+  finalPage.append(finalPage.querySelector('.illustration'));
   const previous = document.getElementById('prev-page');
   const book = document.getElementById('book');
   const letter = document.getElementById('letter-overlay');
